@@ -25,6 +25,12 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final WeatherClient weatherClient;
 
+    /*
+    클래스 Transactional 이 설정이 리드온리로 되어 있어서 세이브 하는 과정에서 오류 발생
+    saveTodo 메서드에 @Transactional 추가 함으로 서 이 메서드에 한해 기존 @Transactional(readOnly = true) 설정을 덮어 씌어줌
+     */
+
+    @Transactional
     public TodoSaveResponse saveTodo(AuthUser authUser, TodoSaveRequest todoSaveRequest) {
         User user = User.fromAuthUser(authUser);
 
