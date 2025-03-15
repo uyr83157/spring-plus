@@ -9,13 +9,17 @@ import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
+import org.example.expert.domain.todo.specification.TodoSpecifications;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -53,10 +57,24 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather, LocalDateTime startedAt, LocalDateTime endedAt) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+
+        Page<Todo> todos;
+
+        if (weather == null && startedAt == null && endedAt == null) {
+            // JPQL을 사용
+            todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+
+        } else {
+            // 추가 필터는 Specification 사용
+            Specification<Todo> specification = Specification
+                    .where(TodoSpecifications.weatherFilter(weather))
+                    .and(TodoSpecifications.modifiedAtFilter(startedAt, endedAt));
+
+            todos = todoRepository.findAll(specification, pageable);
+        }
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
