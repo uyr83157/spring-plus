@@ -29,7 +29,7 @@ public class User extends Timestamped {
         this.nickname = nickname;
     }
 
-    private User(Long id, String email, UserRole userRole, String nickname) {
+    private User(Long id, String email, String nickname, UserRole userRole) {
         this.id = id;
         this.email = email;
         this.userRole = userRole;
@@ -37,7 +37,7 @@ public class User extends Timestamped {
     }
 
     public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserRole(), authUser.getNickname());
+        return new User(authUser.getId(), authUser.getEmail(), authUser.getNickname(), authUser.getUserRole());
     }
 
     public void changePassword(String password) {

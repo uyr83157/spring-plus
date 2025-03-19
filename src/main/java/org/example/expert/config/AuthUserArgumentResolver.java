@@ -42,6 +42,6 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         UserRole userRole = UserRole.of((String) request.getAttribute("userRole"));
         String nickname = (String) request.getAttribute("nickname"); // JwtFilter 에서 set 한 nickname 가져옴
 
-        return new AuthUser(userId, email, userRole, nickname);
+        return new AuthUser(userId, email, nickname, userRole);
     }
 }
